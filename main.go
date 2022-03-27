@@ -3,13 +3,35 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
 )
+
+type Stats struct {
+	Stats []Stat `json:"stats"`
+}
+
+type Stat struct {
+	TimesPlayed   int `json:"timesPlayed"`
+	LastPlayed    int `json:"lastPlayed"`
+	CurrentStreak int `json:"currentStreak"`
+	MaxStreak     int `json:"maxStreak"`
+	Tries0        int `json:"tries0"`
+	Tries1        int `json:"tries1"`
+	Tries2        int `json:"tries2"`
+	Tries3        int `json:"tries3"`
+	Tries4        int `json:"tries4"`
+	Tries5        int `json:"tries5"`
+	Tries6        int `json:"tries6"`
+}
 
 func main() {
 	// how many guesses taken
@@ -37,7 +59,8 @@ func main() {
 		// TODO fix up this bit where it calls the same routine twice.
 		if strings.Compare(answer, guess) == 0 {
 			checkAnswer(answer, guess)
-			fmt.Println("\nYou got it in", numberOfGuesses, "guesses! ")
+
+			updateStats(numberOfGuesses)
 			break
 		} else {
 			checkAnswer(answer, guess)
@@ -92,5 +115,65 @@ func checkAnswer(answer string, guess string) {
 
 }
 
+func updateStats(numberOfGuesses int) {
+
+	_, err := os.Stat("stats.json")
+	if err == nil {
+		// fmt.Println("File Exists")
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		source, err := os.Open("_stats.json")
+
+		destination, err := os.Create("stats.json")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer destination.Close()
+		newStatsFile, err := io.Copy(destination, source)
+		source.Close()
+		fmt.Println(newStatsFile)
+	}
+
+	statsFile, err := os.Open("stats.json")
+	byteValue, _ := ioutil.ReadAll(statsFile)
+
+	var stats Stats
+	json.Unmarshal(byteValue, &stats)
+
+	fmt.Println("\nYou got it in", numberOfGuesses, "guesses! ")
+	// start updating the stats
+	// number of times played in total
+	stats.Stats[0].TimesPlayed++
+
+	// number of guesses taken
+	switch numberOfGuesses {
+	case 0:
+		stats.Stats[0].Tries0++
+	case 1:
+		stats.Stats[0].Tries1++
+	case 2:
+		stats.Stats[0].Tries2++
+	case 3:
+		stats.Stats[0].Tries3++
+	case 4:
+		stats.Stats[0].Tries4++
+	case 5:
+		stats.Stats[0].Tries5++
+	case 6:
+		stats.Stats[0].Tries6++
+	}
+
+	statsByte, err := json.Marshal(stats)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = ioutil.WriteFile("stats.json", statsByte, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 //TODO - collect a list of all the letters used and display it.
 //TODO - put some space into the results to make it more legible
+//TODO - update the stats - write a stats file.
