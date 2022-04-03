@@ -62,6 +62,9 @@ func main() {
 
 			updateStats(numberOfGuesses)
 			break
+		} else if numberOfGuesses == 6 {
+			checkAnswer(answer, guess)
+			updateStats(0)
 		} else {
 			checkAnswer(answer, guess)
 		}
@@ -103,12 +106,12 @@ func checkAnswer(answer string, guess string) {
 
 	for i := 0; i < len(guess); i++ {
 		if guess[i:i+1] == answer[i:i+1] {
-			fmt.Printf(BGreen + guess[i:i+1] + Reset)
+			fmt.Printf(BGreen + guess[i:i+1] + " " + Reset + " ")
 		} else {
 			if strings.Contains(answer, guess[i:i+1]) {
-				fmt.Printf(Yellow + guess[i:i+1] + Reset)
+				fmt.Printf(Yellow + guess[i:i+1] + Reset + " ")
 			} else {
-				fmt.Printf(guess[i : i+1])
+				fmt.Printf(guess[i:i+1] + " ")
 			}
 		}
 	}
@@ -140,10 +143,22 @@ func updateStats(numberOfGuesses int) {
 	var stats Stats
 	json.Unmarshal(byteValue, &stats)
 
-	fmt.Println("\nYou got it in", numberOfGuesses, "guesses! ")
 	// start updating the stats
 	// number of times played in total
 	stats.Stats[0].TimesPlayed++
+
+	// did we get it right?
+	if numberOfGuesses != 0 {
+		fmt.Println("\nYou got it in", numberOfGuesses, "guesses! ")
+		stats.Stats[0].CurrentStreak++
+	} else {
+		stats.Stats[0].CurrentStreak = 0
+	}
+
+	// are we currently on a max streak?
+	if numberOfGuesses != 0 && stats.Stats[0].CurrentStreak > stats.Stats[0].MaxStreak {
+		stats.Stats[0].MaxStreak++
+	}
 
 	// number of guesses taken
 	switch numberOfGuesses {
@@ -172,8 +187,11 @@ func updateStats(numberOfGuesses int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
 
-//TODO - collect a list of all the letters used and display it.
-//TODO - put some space into the results to make it more legible
-//TODO - update the stats - write a stats file.
+	fmt.Println("Statistics")
+	fmt.Printf("Played %d games == %d %% Win == Current Streak %d == Max Streak %d",
+		stats.Stats[0].TimesPlayed,
+		((stats.Stats[0].TimesPlayed-stats.Stats[0].Tries0)/stats.Stats[0].TimesPlayed)*100,
+		stats.Stats[0].CurrentStreak,
+		stats.Stats[0].MaxStreak)
+}
