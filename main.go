@@ -13,6 +13,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/inancgumus/screen"
 )
 
 type Stats struct {
@@ -36,7 +38,8 @@ type Stat struct {
 func main() {
 	// how many guesses taken
 	numberOfGuesses := 0
-
+	lettersUsed := make([]string, 0)
+	// lettersUsed := ""
 	rand.Seed(time.Now().UnixNano())
 
 	answer := getAnswer()
@@ -65,8 +68,10 @@ func main() {
 		} else if numberOfGuesses == 6 {
 			checkAnswer(answer, guess)
 			updateStats(0)
+			break
 		} else {
 			checkAnswer(answer, guess)
+			lettersUsed = printLettersUsed(lettersUsed, strings.Split(guess, ""))
 		}
 
 	}
@@ -100,13 +105,14 @@ func checkAnswer(answer string, guess string) {
 
 	if len(guess) != 5 {
 		fmt.Println("your answer needs to be 5 chars long!")
-		// break
+		return
 	}
+	screen.Clear()
 	fmt.Println("Checking your guess:")
 
 	for i := 0; i < len(guess); i++ {
 		if guess[i:i+1] == answer[i:i+1] {
-			fmt.Printf(BGreen + guess[i:i+1] + " " + Reset + " ")
+			fmt.Printf(BGreen + guess[i:i+1] + Reset + " ")
 		} else {
 			if strings.Contains(answer, guess[i:i+1]) {
 				fmt.Printf(Yellow + guess[i:i+1] + Reset + " ")
@@ -115,7 +121,6 @@ func checkAnswer(answer string, guess string) {
 			}
 		}
 	}
-
 }
 
 func updateStats(numberOfGuesses int) {
@@ -189,9 +194,17 @@ func updateStats(numberOfGuesses int) {
 	}
 
 	fmt.Println("Statistics")
-	fmt.Printf("Played %d games == %d %% Win == Current Streak %d == Max Streak %d",
+	fmt.Printf("Played %d games == %d %% Win == Current Streak %d == Max Streak %d \n",
 		stats.Stats[0].TimesPlayed,
 		((stats.Stats[0].TimesPlayed-stats.Stats[0].Tries0)/stats.Stats[0].TimesPlayed)*100,
 		stats.Stats[0].CurrentStreak,
 		stats.Stats[0].MaxStreak)
+}
+
+func printLettersUsed(lettersUsed []string, guess []string) []string {
+	for i := 0; i < len(guess); i++ {
+		lettersUsed = append(lettersUsed, guess[i])
+	}
+	fmt.Println("\nLetters you have used:\n", lettersUsed)
+	return lettersUsed
 }

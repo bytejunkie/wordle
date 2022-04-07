@@ -16,7 +16,7 @@ suggestions and comments gratefully received on matt@bytejunkie.dev
 
 # todo
 
-- collect a list of all the letters used and display it.
+- ~~collect a list of all the letters used and display it.~~
 - ~~put some space into the results to make it more legible~~
 - ~~update the stats ~~
 - ~~write a stats file~~. 
@@ -25,3 +25,4 @@ suggestions and comments gratefully received on matt@bytejunkie.dev
 - ~~current streak~~ 
 - ~~max streak~~
 - guess distribution
+- make the letters used look nicer? alphabetic? keyboard format?
