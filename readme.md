@@ -1,6 +1,6 @@
 # wordle
 
-my attempt at a go version of wordle.
+my attempt at a version of wordle, written in golang.
 
 # how to run
 
@@ -9,6 +9,9 @@ just clone the repo and run it
 ```
 go run .
 ```
+
+If you run this inside your ide, its very much subject to your theme and it sometimes looks better in Terminal (insert shell of choice).
+
 
 suggestions and comments gratefully received on matt@bytejunkie.dev 
 
@@ -24,5 +27,9 @@ suggestions and comments gratefully received on matt@bytejunkie.dev
 - ~~win %age~~ 
 - ~~current streak~~ 
 - ~~max streak~~
-- guess distribution
+- ~~guess distribution~~
 - make the letters used look nicer? alphabetic? keyboard format?
+- letters used needs to remove dupelicats
+- tests
+-- 6 wrong answers - the game wins
+-- 

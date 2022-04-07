@@ -22,17 +22,18 @@ type Stats struct {
 }
 
 type Stat struct {
-	TimesPlayed   int `json:"timesPlayed"`
-	LastPlayed    int `json:"lastPlayed"`
-	CurrentStreak int `json:"currentStreak"`
-	MaxStreak     int `json:"maxStreak"`
-	Tries0        int `json:"tries0"`
-	Tries1        int `json:"tries1"`
-	Tries2        int `json:"tries2"`
-	Tries3        int `json:"tries3"`
-	Tries4        int `json:"tries4"`
-	Tries5        int `json:"tries5"`
-	Tries6        int `json:"tries6"`
+	TimesPlayed   int   `json:"timesPlayed"`
+	LastPlayed    int   `json:"lastPlayed"`
+	CurrentStreak int   `json:"currentStreak"`
+	MaxStreak     int   `json:"maxStreak"`
+	Tries         []int `json:"tries"`
+	Tries0        int   `json:"tries0"`
+	Tries1        int   `json:"tries1"`
+	Tries2        int   `json:"tries2"`
+	Tries3        int   `json:"tries3"`
+	Tries4        int   `json:"tries4"`
+	Tries5        int   `json:"tries5"`
+	Tries6        int   `json:"tries6"`
 }
 
 func main() {
@@ -165,23 +166,7 @@ func updateStats(numberOfGuesses int) {
 		stats.Stats[0].MaxStreak++
 	}
 
-	// number of guesses taken
-	switch numberOfGuesses {
-	case 0:
-		stats.Stats[0].Tries0++
-	case 1:
-		stats.Stats[0].Tries1++
-	case 2:
-		stats.Stats[0].Tries2++
-	case 3:
-		stats.Stats[0].Tries3++
-	case 4:
-		stats.Stats[0].Tries4++
-	case 5:
-		stats.Stats[0].Tries5++
-	case 6:
-		stats.Stats[0].Tries6++
-	}
+	stats.Stats[0].Tries[numberOfGuesses]++
 
 	statsByte, err := json.Marshal(stats)
 	if err != nil {
@@ -199,6 +184,11 @@ func updateStats(numberOfGuesses int) {
 		((stats.Stats[0].TimesPlayed-stats.Stats[0].Tries0)/stats.Stats[0].TimesPlayed)*100,
 		stats.Stats[0].CurrentStreak,
 		stats.Stats[0].MaxStreak)
+
+	fmt.Println("Win Distribution")
+	for i := 1; i < 7; i++ {
+		fmt.Printf("%d: %d\n", i, stats.Stats[0].Tries[i])
+	}
 }
 
 func printLettersUsed(lettersUsed []string, guess []string) []string {
